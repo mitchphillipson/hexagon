@@ -92,9 +92,10 @@ class Engine(Events):
             self.listen()
 
     def on_mouse_down(self,position,button):
-        tile = self.state[self.state.pixel_to_tile(position)]
+        tile_key = self.state.pixel_to_tile(position)
+        tile = self.state[tile_key]
         tile.add_to_tile('./hdhd.png')
-        print(self.state.pixel_to_tile(position))
+        #print(tile_key)
         tile.draw()
 
 

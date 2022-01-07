@@ -3,9 +3,10 @@
 #from hex.constants import *
 
 import pygame
-from pygame.locals import WHITE,INVISIBLE,BLACK
+from hex.constants import WHITE,INVISIBLE,BLACK
 
-from math import pi,sqrt,sin,cos
+import numpy as np
+from math import pi,sqrt#,sin,cos
 
 class RegularPolygon(object):
     
@@ -14,14 +15,24 @@ class RegularPolygon(object):
         self.radius = radius
         self.center = center
         self.sides = numofsides    
-        self.points = self.create_points(self.radius,self.theta,self.center,self.sides)
+        self.points = self.create_points()#self.radius,self.theta,self.center,self.sides)
 
-    def create_points(self,radius,theta,center,sides):
-        return [(radius*cos(i*theta)+center[0],radius*sin(i*theta)+center[1]) for i in range(sides)]
+    def create_points(self,center = None):#,radius,theta,center,sides):
+        "Numpy array of the boundary points. The shape is 2xN"
+        
+        if center is None:
+            center = self.center
+        
+        theta = np.linspace(0,2*np.pi,self.sides+1)[:-1]
+        
+        return np.stack([self.radius*np.cos(theta)+center[0], self.radius*np.sin(theta)+center[1]]).T
+        
+    
+        #return [(self.radius*np.cos(i*self.theta)+self.center[0],self.radius*np.sin(i*self.theta)+self.center[1]) for i in range(self.sides)]
     
     def get_affine_points(self):
         affineCenter = [self.radius , sqrt(3)*self.radius/2]
-        return self.create_points(self.radius,self.theta,affineCenter,self.sides)
+        return self.create_points(affineCenter)
 
     def get_points(self):
         return self.points
@@ -29,28 +40,40 @@ class RegularPolygon(object):
     def move(self,newCenter):
         self.center = newCenter
         #self.radius = newRadius
-        self.points = self.createPoints(self.radius,self.theta,self.center,self.sides)
+        self.points = self.createPoints()
 
     def expand(self,newRadius):
         self.radius = newRadius
-        self.points = self.createPoints(self.radius,self.theta,self.center,self.sides)
-
+        self.points = self.createPoints()
 
 
     def __contains__(self,point):
-        pass
+        edge_vectors = np.roll(self.points,1,axis=0) - self.points
+        test_vectors = np.array(point) - self.points
+        
+        matrices = np.stack([edge_vectors,test_vectors],axis=1)
+        
+        return all(np.linalg.det(matrices)<0)
+        
 
 
 class Tile(RegularPolygon):
 
-    def __init__(self,w,h,radius):
-        super(Tile,self).__init__((0,0),radius,6)
+    def __init__(self,w,h,radius,center):
+        super(Tile,self).__init__(center,radius,6)
         self.position = (w,h)
         self.tile = None
         
         self.full_image = pygame.image.load('./hex1.png').convert()        
 
         self.build()
+    
+    #def __contains__(self,point):
+    #    x,y = self.position
+    #    shifted_point = [point[0] - x,point[1] - y]
+        
+    #    return super(Tile,self).__contains__(shifted_point)
+        
 
     def build(self):
         self.make_tile()
@@ -126,4 +149,6 @@ class Tile(RegularPolygon):
 
 
 
-
+if __name__ == "__main__":
+    
+    S = Tile(70,70,10)

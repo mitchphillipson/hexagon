@@ -21,7 +21,7 @@ class State(object):
         tmp = {}
         for i in range(w):
             for j in range(h):
-                tmp[(i,j)] = Tile(i,j,self.radius)
+                tmp[(i,j)] = Tile(i,j,self.radius,self.get_tile_center((i,j)))
         return tmp
     
 
@@ -44,22 +44,33 @@ class State(object):
         """
         The input is raw pixel information. The pixel information is tile based, not screen based. 
         """
-        wide,high = self.get_size()
-        r = self.radius
-        delta_x = 3/2*r
-        delta_y = sqrt(3)*r
-        x_values = list(range(wide))
-        y_values = list(range(high))
-        x_pos,y_pos = pixel
-        x1 = min(x_values,key = lambda x: abs((x+1)*delta_x-r/2-x_pos))
-        x_values.remove(x1)
-        x2 = min(x_values,key = lambda x: abs((x+1)*delta_x-r/2-x_pos))
-        y1 = min(y_values,key = lambda y: abs((y+1)*delta_y-delta_y/2-y_pos))
-        y_values.remove(y1)
-        y2 = min(y_values,key = lambda y: abs((y+1)*delta_y-delta_y/2-y_pos))
-        testHexes = [(x1,y1),(x1,y2),(x2,y1),(x2,y2)]
-        return min(testHexes, key = lambda pt: (self.get_tile_center(pt)[0]-x_pos)**2  
-                                            + (self.get_tile_center(pt)[1]-y_pos)**2)
+        
+        #print(pixel)
+        
+        L = [tile for tile in self.grid if pixel in self[tile]]
+        
+        #print(L)
+        
+        if L != []:
+            return L[0]    
+        return (0,0)
+        
+        #wide,high = self.get_size()
+        #r = self.radius
+        #delta_x = 3/2*r
+        #delta_y = sqrt(3)*r
+        #x_values = list(range(wide))
+        #y_values = list(range(high))
+        #x_pos,y_pos = pixel
+        #x1 = min(x_values,key = lambda x: abs((x+1)*delta_x-r/2-x_pos))
+        #x_values.remove(x1)
+        #x2 = min(x_values,key = lambda x: abs((x+1)*delta_x-r/2-x_pos))
+        #y1 = min(y_values,key = lambda y: abs((y+1)*delta_y-delta_y/2-y_pos))
+        #y_values.remove(y1)
+        #y2 = min(y_values,key = lambda y: abs((y+1)*delta_y-delta_y/2-y_pos))
+        #testHexes = [(x1,y1),(x1,y2),(x2,y1),(x2,y2)]
+        #return min(testHexes, key = lambda pt: (self.get_tile_center(pt)[0]-x_pos)**2  
+        #                                    + (self.get_tile_center(pt)[1]-y_pos)**2)
 
 
     def get_tile_center(self,tile):
