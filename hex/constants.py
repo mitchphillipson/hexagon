@@ -2,15 +2,15 @@
 """
 Just constants and basic imports.
 """
-from __future__ import division
+#from __future__ import division
 
 import pygame
-from pygame.locals import *
-import pygame.font
+#from pygame.locals import *
+#import pygame.font
 
-pygame.init()
+#pygame.init()
 
-from math import *
+#from math import *
 
 
 #Colors

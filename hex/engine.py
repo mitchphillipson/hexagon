@@ -6,9 +6,11 @@ import sys
 
 import pygame
 
+from pygame.locals import *
+
 #My imports
 from hex.constants import *
-from hex.state import *
+from hex.state import State
 
 
 #Set up the screen
@@ -57,6 +59,9 @@ class Events(object):
         pygame.quit()
         sys.exit()
 
+
+    def on_ENTER(self):
+        pass
 
     def on_key_down(self,key):
         try:
