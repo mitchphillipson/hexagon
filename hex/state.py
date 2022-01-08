@@ -9,24 +9,37 @@ from math import sqrt
 class State(object):
 
     def __init__(self):
-        self.dimension = (15,8)
-        self.radius = 50
-        self.grid = self.make_grid(self.dimension)
+        self.dimension = (40,25)#(15,8)
+        self.radius = 20
+        self.make_grid(self.dimension)
         self.screen_coords = [0,0]
         self.visible_tiles = self.find_visible_tiles()
         self.draw_tiles()
 
+        self.tile = None
+
     def make_grid(self,dimension):
         w,h = dimension
-        tmp = {}
+        self.grid = {}
         for i in range(w):
             for j in range(h):
-                tmp[(i,j)] = Tile(i,j,self.radius,self.get_tile_center((i,j)))
-        return tmp
+                self.grid[(i,j)] = Tile(i,j,self.radius,self.get_tile_center((i,j)))
+        
     
 
+    def select(self,tile):
+        "In -> Instance of Tile class"
+        
+        if self.tile is not None:
+            self.tile.add_to_tile()
+            self.tile.draw()
+        self.tile = tile
+        tile.add_to_tile('./hdhd.png')
+        tile.draw()
+
     def find_visible_tiles(self):
-        return [0,0,15,8]
+        x,y = self.dimension
+        return [0,0,x,y]
 
     def draw_tiles(self):
         w1,h1,w2,h2 = self.visible_tiles
@@ -44,33 +57,12 @@ class State(object):
         """
         The input is raw pixel information. The pixel information is tile based, not screen based. 
         """
-        
-        #print(pixel)
-        
         L = [tile for tile in self.grid if pixel in self[tile]]
-        
-        #print(L)
-        
+
         if L != []:
             return L[0]    
-        return (0,0)
+        return None
         
-        #wide,high = self.get_size()
-        #r = self.radius
-        #delta_x = 3/2*r
-        #delta_y = sqrt(3)*r
-        #x_values = list(range(wide))
-        #y_values = list(range(high))
-        #x_pos,y_pos = pixel
-        #x1 = min(x_values,key = lambda x: abs((x+1)*delta_x-r/2-x_pos))
-        #x_values.remove(x1)
-        #x2 = min(x_values,key = lambda x: abs((x+1)*delta_x-r/2-x_pos))
-        #y1 = min(y_values,key = lambda y: abs((y+1)*delta_y-delta_y/2-y_pos))
-        #y_values.remove(y1)
-        #y2 = min(y_values,key = lambda y: abs((y+1)*delta_y-delta_y/2-y_pos))
-        #testHexes = [(x1,y1),(x1,y2),(x2,y1),(x2,y2)]
-        #return min(testHexes, key = lambda pt: (self.get_tile_center(pt)[0]-x_pos)**2  
-        #                                    + (self.get_tile_center(pt)[1]-y_pos)**2)
 
 
     def get_tile_center(self,tile):

@@ -6,12 +6,11 @@ import pygame
 from hex.constants import WHITE,INVISIBLE,BLACK
 
 import numpy as np
-from math import pi,sqrt#,sin,cos
 
 class RegularPolygon(object):
     
     def __init__(self,center,radius,numofsides):
-        self.theta = 2*pi / numofsides
+        self.theta = 2*np.pi / numofsides
         self.radius = radius
         self.center = center
         self.sides = numofsides    
@@ -31,7 +30,7 @@ class RegularPolygon(object):
         #return [(self.radius*np.cos(i*self.theta)+self.center[0],self.radius*np.sin(i*self.theta)+self.center[1]) for i in range(self.sides)]
     
     def get_affine_points(self):
-        affineCenter = [self.radius , sqrt(3)*self.radius/2]
+        affineCenter = [self.radius , np.sqrt(3)*self.radius/2]
         return self.create_points(affineCenter)
 
     def get_points(self):
@@ -39,7 +38,6 @@ class RegularPolygon(object):
 
     def move(self,newCenter):
         self.center = newCenter
-        #self.radius = newRadius
         self.points = self.createPoints()
 
     def expand(self,newRadius):
@@ -64,7 +62,9 @@ class Tile(RegularPolygon):
         self.position = (w,h)
         self.tile = None
         
-        self.full_image = pygame.image.load('./hex1.png').convert()        
+        self.full_image = "./hex1.png"
+        
+        #self.full_image = pygame.image.load('./hex1.png').convert()        
 
         self.build()
     
@@ -78,7 +78,7 @@ class Tile(RegularPolygon):
     def build(self):
         self.make_tile()
         self.draw_border()
-
+        self.draw()
 
     def make_tile(self):
         width,height = self.get_size()
@@ -86,10 +86,8 @@ class Tile(RegularPolygon):
         self.tile.fill(WHITE)
         self.tile.set_colorkey(INVISIBLE)
 
-        image = pygame.transform.scale(self.full_image,(int(width),int(height))).convert()
-
-        self.tile.blit(image,(0,0))
-
+        self.add_to_tile(self.full_image)
+        
         self.set_rect()
 
     def draw(self,update = None):
@@ -112,7 +110,7 @@ class Tile(RegularPolygon):
         """
         Return the current dimensions of the tile. Typically called if the dimensions are changing.
         """
-        return 2*self.radius,sqrt(3)*self.radius
+        return 2*self.radius,np.sqrt(3)*self.radius
 
     def shift(self,new_location):
         tile_rect = self.get_rect()
@@ -139,12 +137,16 @@ class Tile(RegularPolygon):
         return self.rect
     
 
-    def add_to_tile(self,image):
+    def add_to_tile(self,image = None):
         width,height = self.get_size()
+        if image is None:
+            image = self.full_image
         nimage = pygame.image.load(image).convert()            
         nimage = pygame.transform.scale(nimage,(int(width),int(height))).convert()
         
         self.tile.blit(nimage,(0,0))
+        
+        self.draw_border()
 
 
 

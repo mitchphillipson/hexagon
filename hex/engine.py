@@ -6,10 +6,10 @@ import sys
 
 import pygame
 
-from pygame.locals import *
+
 
 #My imports
-from hex.constants import *
+from hex.constants import BLACK
 from hex.state import State
 
 
@@ -32,7 +32,7 @@ class Events(object):
         self.RIGHTMOUSE = 3
         self.SCROLLIN = 4
         self.SCROLLOUT = 5
-        self.key_down = {K_ESCAPE : self.on_QUIT,K_RETURN : self.on_ENTER}
+        self.key_down = {pygame.locals.K_ESCAPE : self.on_QUIT,pygame.locals.K_RETURN : self.on_ENTER}
 
 #        self.scroll = { K_RIGHT : SCROLL_RIGHT , K_LEFT : SCROLL_LEFT , K_UP : SCROLL_UP , K_DOWN : SCROLL_DOWN,
 #                        K_d: SCROLL_RIGHT , K_a : SCROLL_LEFT , K_w : SCROLL_UP , K_s : SCROLL_DOWN}
@@ -44,15 +44,15 @@ class Events(object):
     def listen(self):
         eventlist= pygame.event.get()
         for event in eventlist:
-            if event.type ==   QUIT: 
+            if event.type ==   pygame.locals.QUIT: 
                 self.on_QUIT()
-            if event.type == KEYDOWN:
+            if event.type == pygame.locals.KEYDOWN:
                 self.on_key_down(event.key)
-            if event.type == MOUSEBUTTONDOWN:
+            if event.type == pygame.locals.MOUSEBUTTONDOWN:
                 self.on_mouse_down(event.pos,event.button)
-            if event.type == MOUSEBUTTONUP:
+            if event.type == pygame.locals.MOUSEBUTTONUP:
                 self.on_mouse_up(event.pos,event.button)
-            if event.type == MOUSEMOTION:
+            if event.type == pygame.locals.MOUSEMOTION:
                 self.on_mouse_motion(event.pos,event.rel,event.buttons)
                 
     def on_QUIT(self):
@@ -70,6 +70,12 @@ class Events(object):
             pass
 
     def on_mouse_down(self,position,button):
+        #button = 1 -> Left
+        #button = 2 -> Middle Click
+        #button = 3 -> Right
+        #button = 4 -> Scroll Up
+        #button = 5 -> Scroll Down
+        
         pass
 
     def on_mouse_up(self,position,button):
@@ -93,11 +99,19 @@ class Engine(Events):
 
     def on_mouse_down(self,position,button):
         tile_key = self.state.pixel_to_tile(position)
-        tile = self.state[tile_key]
-        tile.add_to_tile('./hdhd.png')
-        #print(tile_key)
-        tile.draw()
+        if tile_key is not None:
+            tile = self.state[tile_key]
+            self.state.select(tile)
+        #    tile.add_to_tile('./hdhd.png')
+        #    tile.draw()
 
+
+    #def on_mouse_up(self,position,button):
+    #    tile_key = self.state.pixel_to_tile(position)
+    #    if tile_key is not None:
+    #        tile = self.state[tile_key]
+    #        tile.add_to_tile()
+    #        tile.draw()
 
     def on_ENTER(self):
         print(self.state.grid)

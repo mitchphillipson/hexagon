@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+
+# Spyder Project
+.spyproject/
+
 # C extensions
 *.so
 
